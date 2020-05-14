@@ -16,7 +16,6 @@ void subscribemqtt()
   client.subscribe("/myroom/relay/1");
   client.subscribe("/myroom/relay/2");
   client.subscribe("/myroom/relay/3");
-  client.subscribe("/node_relay/reboot");
 }
 
 void reconnect() {

@@ -168,13 +168,6 @@ void callback(char* topic, byte* payload, unsigned int length)
       client.publish("/myroom/relay/relState3", "1"); //publish to topic
     }
   }
-
-  if(topicstr=="/node_relay/reboot")
-  {
-    client.publish("/node_relay/status", "reboot called");
-    delay(1000);
-    ESP.restart();
-  }
 }
 
 void loop() 
