@@ -369,6 +369,26 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   {
     ESP.restart();
   }
+
+  if(strcmp((char*)topic, "/node_relay/reqstat") == 0)  // Request statistics function
+  {
+    unsigned long REQ_STAT_CUR_MILLIS = millis(); // gets current millis
+
+    char REQ_STAT_CUR_TEMPCHAR[60];
+
+    snprintf(
+      REQ_STAT_CUR_TEMPCHAR,
+      60, 
+      "%d.%d.%d.%d,%lu", 
+      WiFi.localIP()[0], 
+      WiFi.localIP()[1],
+      WiFi.localIP()[2], 
+      WiFi.localIP()[3],
+      (int)REQ_STAT_CUR_MILLIS
+    );  // convert string to char array for Millis. Elegance courtesy of Shahmi Technosparks
+
+    mqttClient.publish("/node_relay/curstat", 0, false, REQ_STAT_CUR_TEMPCHAR);
+  }
 }
 
 void onMqttPublish(uint16_t packetId) {
