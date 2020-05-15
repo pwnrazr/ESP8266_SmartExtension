@@ -14,14 +14,16 @@
 
 #include "settings.h"
 #include "comms.h"
+#include "OTAfunc.h"
 
 void setup() 
 {
   Serial.begin(115200);
   commssetup();
+  otasetup();
 }
 
 void loop() 
 {
-
+  ArduinoOTA.handle();
 }
