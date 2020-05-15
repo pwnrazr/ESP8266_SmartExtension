@@ -214,7 +214,6 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       Serial.println("Relay 0 OFF"); 
       lastval0 = 1;
       Serial.println(lastval0);
-      //mqttClient.publish("/myroom/relay/ip", 2, false, ipaddr);
       mqttClient.publish("/myroom/relay/relState0_dev", 2, false, "0"); //publish to topic
     }
     else if(payloadstr=="1")
