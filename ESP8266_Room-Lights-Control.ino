@@ -84,6 +84,14 @@ void setup()
 void loop() 
 {
   ArduinoOTA.handle();
+  
+  currentMillis = millis();
+
+  if (currentMillis - switch_prevMillis >= switchInterval) 
+  {
+    switch_prevMillis = currentMillis;
+    switchpolling();
+  }
 }
 
 void switchpolling()
