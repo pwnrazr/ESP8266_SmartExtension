@@ -1,5 +1,3 @@
-#include <ArduinoOTA.h>
-
 void otasetup() 
 {
   while (WiFi.status() != WL_CONNECTED)

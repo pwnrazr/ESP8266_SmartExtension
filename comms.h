@@ -1,6 +1,3 @@
-#include <Ticker.h>
-#include <AsyncMqttClient.h>
-
 AsyncMqttClient mqttClient;
 Ticker mqttReconnectTimer;
 
@@ -84,6 +81,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   Serial.print("  index: ");
   Serial.println(index);
   Serial.print("  total: ");
+  
   Serial.println(total);
 
   String payloadstr;
