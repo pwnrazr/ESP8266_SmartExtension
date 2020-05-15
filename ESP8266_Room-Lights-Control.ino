@@ -8,6 +8,9 @@
   #define MQTT_USER "mqttUSR"
   #define MQTT_PASS "mqttPASS"
  */
+#include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
+#include <WiFiUdp.h>
 
 #include "settings.h"
 #include "comms.h"
