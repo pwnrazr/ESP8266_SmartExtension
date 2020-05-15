@@ -36,7 +36,6 @@ long interval = 200, interval2 = 15000;
 void setup() 
 {
   pinMode(2, OUTPUT);     // Initialize the BUILTIN_LED pin as an output
-  Wire.begin(4, 5); //SDA, SCL
   
   mcp.begin();
   
