@@ -205,6 +205,27 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
     payloadstr = String(payloadstr + (char)payload[i]);  //convert payload to string
   }
   Serial.println(payloadstr);
+
+  if(strcmp((char*)topic, "/myroom/relay/0") == 0)
+  {
+    if(payloadstr=="0") 
+    {
+      mcp.digitalWrite(0, HIGH);
+      Serial.println("Relay 0 OFF"); 
+      lastval0 = 1;
+      Serial.println(lastval0);
+      //mqttClient.publish("/myroom/relay/ip", 2, false, ipaddr);
+      mqttClient.publish("/myroom/relay/relState0_dev", 2, false, "0"); //publish to topic
+    }
+    else if(payloadstr=="1")
+    {
+      mcp.digitalWrite(0, LOW);
+      Serial.println("Relay 0 ON"); 
+      lastval0 = 0;
+      Serial.println(lastval0);
+      mqttClient.publish("/myroom/relay/relState0_dev", 2, false, "1"); //publish to topic
+    }
+  }
 }
 
 void onMqttPublish(uint16_t packetId) {
