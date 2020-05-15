@@ -86,6 +86,23 @@ void loop()
   ArduinoOTA.handle();
 }
 
+void switchpolling()
+{
+  //START Relay 0 Switch
+  buttonState0 = mcp.digitalRead(4);
+  if (buttonState0 != lastButtonState0) //Relay 0
+  {
+    Serial.println("Changed STATE Relay 0");
+    mcp.digitalWrite(0, !lastval0);
+    itoa(lastval0, charval0, 10);
+    lastval0 = !lastval0;
+    Serial.println(lastval0);
+    mqttClient.publish("/myroom/relay/relState0", 2, false, charval0); //publish to topic
+  }
+  lastButtonState0 = buttonState0;
+  //END Relay 0 Switch
+}
+
 void otasetup() 
 {
   while (WiFi.status() != WL_CONNECTED)
