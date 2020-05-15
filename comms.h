@@ -39,7 +39,7 @@ void onMqttConnect(bool sessionPresent) {
   mqttClient.subscribe("/myroom/relay/3", 2);
   mqttClient.subscribe("/node_relay/reboot", 2);
   mqttClient.subscribe("/node_relay/reqstat", 2);
-
+  
   mqttClient.publish("/myroom/relay/boot", 2, false, "0"); //publish to topic on boot
   char ipaddr[16];
   sprintf(ipaddr, "%d.%d.%d.%d", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3] );
@@ -85,6 +85,15 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   Serial.println(index);
   Serial.print("  total: ");
   Serial.println(total);
+
+  String payloadstr;
+
+  for (int i = 0; i < len; i++) 
+  {
+    payloadstr = String(payloadstr + (char)payload[i]);  //convert payload to string
+  }
+
+  Serial.println(payloadstr);
 }
 
 void onMqttPublish(uint16_t packetId) {
