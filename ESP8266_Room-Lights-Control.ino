@@ -177,7 +177,7 @@ void otasetup()
   // ArduinoOTA.setPort(8266);
 
   // Hostname defaults to esp8266-[ChipID]
-  ArduinoOTA.setHostname("NodeRelay_DEV");
+  ArduinoOTA.setHostname("NodeRelay");
 
   // No authentication by default
   ArduinoOTA.setPassword(OTA_PASS);
