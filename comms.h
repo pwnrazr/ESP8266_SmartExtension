@@ -31,19 +31,20 @@ void onWifiDisconnect(const WiFiEventStationModeDisconnected& event) {
 
 void onMqttConnect(bool sessionPresent) {
   Serial.println("Connected to MQTT.");
-  Serial.print("Session present: ");
-  Serial.println(sessionPresent);
-  uint16_t packetIdSub = mqttClient.subscribe("test/lol", 2);
-  Serial.print("Subscribing at QoS 2, packetId: ");
-  Serial.println(packetIdSub);
-  mqttClient.publish("test/lol", 0, true, "test 1");
-  Serial.println("Publishing at QoS 0");
-  uint16_t packetIdPub1 = mqttClient.publish("test/lol", 1, true, "test 2");
-  Serial.print("Publishing at QoS 1, packetId: ");
-  Serial.println(packetIdPub1);
-  uint16_t packetIdPub2 = mqttClient.publish("test/lol", 2, true, "test 3");
-  Serial.print("Publishing at QoS 2, packetId: ");
-  Serial.println(packetIdPub2);
+  Serial.println("Subscribing...");
+  //mqttClient.subscribe("test/lol", 2);
+  mqttClient.subscribe("/myroom/relay/0", 2);
+  mqttClient.subscribe("/myroom/relay/1", 2);
+  mqttClient.subscribe("/myroom/relay/2", 2);
+  mqttClient.subscribe("/myroom/relay/3", 2);
+  mqttClient.subscribe("/node_relay/reboot", 2);
+  mqttClient.subscribe("/node_relay/reqstat", 2);
+
+  client.publish("/myroom/relay/boot", "0"); //publish to topic on boot
+  char ipaddr[16];
+  sprintf(ipaddr, "%d.%d.%d.%d", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3] );
+      
+  client.publish("/myroom/relay/ip", ipaddr);
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
