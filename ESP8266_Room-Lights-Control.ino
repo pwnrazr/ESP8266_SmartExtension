@@ -29,22 +29,22 @@ Ticker wifiReconnectTimer;
 
 Adafruit_MCP23017 mcp;
 
-int buttonState0 = 0;
-int lastButtonState0 = 0;  
+byte buttonState0 = 0;
+byte lastButtonState0 = 0;  
 
-int buttonState1 = 0;
-int lastButtonState1 = 0;  
+byte buttonState1 = 0;
+byte lastButtonState1 = 0;  
 
-int buttonState2 = 0;
-int lastButtonState2 = 0;  
+byte buttonState2 = 0;
+byte lastButtonState2 = 0;  
 
-int buttonState3 = 0;
-int lastButtonState3 = 0;  
+byte buttonState3 = 0;
+byte lastButtonState3 = 0;  
 
-int lastval0 = 0;
-int lastval1 = 0;
-int lastval2 = 0;
-int lastval3 = 0;
+byte lastval0 = 0;
+byte lastval1 = 0;
+byte lastval2 = 0;
+byte lastval3 = 0;
 
 char charval0[1];
 char charval1[1];
