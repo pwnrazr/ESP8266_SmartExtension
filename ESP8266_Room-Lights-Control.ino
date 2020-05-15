@@ -100,6 +100,11 @@ void loop()
     heartbeat_prevMillis = currentMillis;
     mqttClient.publish("/nodeRelay/heartbeat", MQTT_QOS, false, "Hi"); //publish to topic
   }
+  
+  if(currentMillis > 4094967296)  //overflow protection
+  {
+    ESP.restart();
+  }
 }
 
 void switchpolling()
