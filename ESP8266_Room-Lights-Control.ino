@@ -5,10 +5,12 @@
   
   #define MQTT_HOST IPAddress(192, 168, 1, 10)
   #define MQTT_PORT 1883
-
+  #define MQTT_USER "mqttUSR"
+  #define MQTT_PASS "mqttPASS"
  */
 
-#include "settings"
+#include "settings.h"
+#include "comms.h"
 
 void setup() 
 {
