@@ -51,8 +51,10 @@ char charval1[1];
 char charval2[1];
 char charval3[1];
 
-unsigned long previousMillis = 0, previousMillis2 = 0, currentMillis;
-long interval = 200, interval2 = 15000;
+unsigned long switch_prevMillis = 0, heartbeat_prevMillis = 0, currentMillis;
+
+#define switchInterval 200
+#define heartbeatInterval 15000
 
 void setup() 
 {
@@ -211,7 +213,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
     if(payloadstr=="0") 
     {
       mcp.digitalWrite(0, HIGH);
-      Serial.println("Relay 0 OFF"); 
+      Serial.println("Relay 0 OFF");
       lastval0 = 1;
       Serial.println(lastval0);
       mqttClient.publish("/myroom/relay/relState0_dev", 2, false, "0"); //publish to topic
