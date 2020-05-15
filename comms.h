@@ -40,11 +40,11 @@ void onMqttConnect(bool sessionPresent) {
   mqttClient.subscribe("/node_relay/reboot", 2);
   mqttClient.subscribe("/node_relay/reqstat", 2);
 
-  client.publish("/myroom/relay/boot", "0"); //publish to topic on boot
+  mqttClient.publish("/myroom/relay/boot", 2, false, "0"); //publish to topic on boot
   char ipaddr[16];
   sprintf(ipaddr, "%d.%d.%d.%d", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3] );
-      
-  client.publish("/myroom/relay/ip", ipaddr);
+  //mqttClient.publish("test/lol", 1, true, "test 2");
+  mqttClient.publish("/myroom/relay/ip", 2, false, ipaddr);
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
