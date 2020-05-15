@@ -92,6 +92,12 @@ void loop()
     switch_prevMillis = currentMillis;
     switchpolling();
   }
+
+  if (currentMillis - heartbeat_prevMillis >= heartbeatInterval) 
+  {
+    heartbeat_prevMillis = currentMillis;
+    mqttClient.publish("/nodeRelay/heartbeat", 2, false, "Hi"); //publish to topic
+  }
 }
 
 void switchpolling()
