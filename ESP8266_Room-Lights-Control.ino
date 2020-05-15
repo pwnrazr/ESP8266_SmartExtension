@@ -208,6 +208,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   }
   Serial.println(payloadstr);
 
+  //Relay 0
   if(strcmp((char*)topic, "/myroom/relay/0") == 0)
   {
     if(payloadstr=="0") 
@@ -216,7 +217,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       Serial.println("Relay 0 OFF");
       lastval0 = 1;
       Serial.println(lastval0);
-      mqttClient.publish("/myroom/relay/relState0_dev", 2, false, "0"); //publish to topic
+      mqttClient.publish("/myroom/relay/relState0", 2, false, "0"); //publish to topic
     }
     else if(payloadstr=="1")
     {
@@ -224,7 +225,70 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       Serial.println("Relay 0 ON"); 
       lastval0 = 0;
       Serial.println(lastval0);
-      mqttClient.publish("/myroom/relay/relState0_dev", 2, false, "1"); //publish to topic
+      mqttClient.publish("/myroom/relay/relState0", 2, false, "1"); //publish to topic
+    }
+  }
+
+  //Relay 1
+  if(strcmp((char*)topic, "/myroom/relay/1") == 0)
+  {
+    if(payloadstr=="0") 
+    {
+      mcp.digitalWrite(1, HIGH);
+      Serial.println("Relay 1 OFF");
+      lastval1 = 1;
+      Serial.println(lastval1);
+      mqttClient.publish("/myroom/relay/relState1", 2, false, "0"); //publish to topic
+    }
+    else if(payloadstr=="1")
+    {
+      mcp.digitalWrite(1, LOW);
+      Serial.println("Relay 1 ON"); 
+      lastval1 = 0;
+      Serial.println(lastval1);
+      mqttClient.publish("/myroom/relay/relState1", 2, false, "1"); //publish to topic
+    }
+  }
+
+  //Relay 2
+  if(strcmp((char*)topic, "/myroom/relay/2") == 0)
+  {
+    if(payloadstr=="0") 
+    {
+      mcp.digitalWrite(2, HIGH);
+      Serial.println("Relay 2 OFF");
+      lastval2 = 1;
+      Serial.println(lastval2);
+      mqttClient.publish("/myroom/relay/relState2", 2, false, "0"); //publish to topic
+    }
+    else if(payloadstr=="1")
+    {
+      mcp.digitalWrite(2, LOW);
+      Serial.println("Relay 2 ON"); 
+      lastval2 = 0;
+      Serial.println(lastval2);
+      mqttClient.publish("/myroom/relay/relState2", 2, false, "1"); //publish to topic
+    }
+  }
+
+  //Relay 3
+  if(strcmp((char*)topic, "/myroom/relay/3") == 0)
+  {
+    if(payloadstr=="0") 
+    {
+      mcp.digitalWrite(3, HIGH);
+      Serial.println("Relay 3 OFF");
+      lastval3 = 1;
+      Serial.println(lastval3);
+      mqttClient.publish("/myroom/relay/relState3", 2, false, "0"); //publish to topic
+    }
+    else if(payloadstr=="1")
+    {
+      mcp.digitalWrite(3, LOW);
+      Serial.println("Relay 3 ON"); 
+      lastval3 = 0;
+      Serial.println(lastval3);
+      mqttClient.publish("/myroom/relay/relState3", 2, false, "1"); //publish to topic
     }
   }
 }
