@@ -7,6 +7,8 @@
   #define MQTT_PORT 1883
   #define MQTT_USER "mqttUSR"
   #define MQTT_PASS "mqttPASS"
+
+  #define OTA_PASS "otaPASS"
  */
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
@@ -20,6 +22,11 @@ void setup()
 {
   Serial.begin(115200);
   commssetup();
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(250);
+    Serial.print(".");
+  }
   otasetup();
 }
 
