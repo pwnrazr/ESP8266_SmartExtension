@@ -56,6 +56,8 @@ unsigned long switch_prevMillis = 0, heartbeat_prevMillis = 0, currentMillis;
 #define switchInterval 200
 #define heartbeatInterval 15000
 
+#define MQTT_QOS 0
+
 void setup() 
 {
   Serial.begin(115200);
@@ -96,7 +98,7 @@ void loop()
   if (currentMillis - heartbeat_prevMillis >= heartbeatInterval) 
   {
     heartbeat_prevMillis = currentMillis;
-    mqttClient.publish("/nodeRelay/heartbeat", 2, false, "Hi"); //publish to topic
+    mqttClient.publish("/nodeRelay/heartbeat", MQTT_QOS, false, "Hi"); //publish to topic
   }
 }
 
@@ -111,7 +113,7 @@ void switchpolling()
     itoa(lastval0, charval0, 10);
     lastval0 = !lastval0;
     Serial.println(lastval0);
-    mqttClient.publish("/myroom/relay/relState0", 2, false, charval0); //publish to topic
+    mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, charval0); //publish to topic
   }
   lastButtonState0 = buttonState0;
   //END Relay 0 Switch
@@ -125,7 +127,7 @@ void switchpolling()
     itoa(lastval1, charval1, 10);
     lastval1 = !lastval1;
     Serial.println(lastval1);
-    mqttClient.publish("/myroom/relay/relState1", 2, false, charval1); //publish to topic
+    mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, charval1); //publish to topic
   }
   lastButtonState1 = buttonState1;
   //END Relay 1 Switch
@@ -139,7 +141,7 @@ void switchpolling()
     itoa(lastval2, charval2, 10);
     lastval2 = !lastval2;
     Serial.println(lastval2);
-    mqttClient.publish("/myroom/relay/relState2", 2, false, charval2); //publish to topic
+    mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, charval2); //publish to topic
   }
   lastButtonState2 = buttonState2;
   //END Relay 2 Switch
@@ -153,7 +155,7 @@ void switchpolling()
     itoa(lastval3, charval3, 10);
     lastval3 = !lastval3;
     Serial.println(lastval3);
-    mqttClient.publish("/myroom/relay/relState3", 2, false, charval3); //publish to topic
+    mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, charval3); //publish to topic
   }
   lastButtonState3 = buttonState3;
   //END Relay 3 Switch
@@ -241,18 +243,18 @@ void onMqttConnect(bool sessionPresent) {
   Serial.println("Connected to MQTT.");
   Serial.println("Subscribing...");
   //mqttClient.subscribe("test/lol", 2);
-  mqttClient.subscribe("/myroom/relay/0", 2);
-  mqttClient.subscribe("/myroom/relay/1", 2);
-  mqttClient.subscribe("/myroom/relay/2", 2);
-  mqttClient.subscribe("/myroom/relay/3", 2);
-  mqttClient.subscribe("/node_relay/reboot", 2);
-  mqttClient.subscribe("/node_relay/reqstat", 2);
+  mqttClient.subscribe("/myroom/relay/0", MQTT_QOS);
+  mqttClient.subscribe("/myroom/relay/1", MQTT_QOS);
+  mqttClient.subscribe("/myroom/relay/2", MQTT_QOS);
+  mqttClient.subscribe("/myroom/relay/3", MQTT_QOS);
+  mqttClient.subscribe("/node_relay/reboot", MQTT_QOS);
+  mqttClient.subscribe("/node_relay/reqstat", MQTT_QOS);
   
-  mqttClient.publish("/myroom/relay/boot", 2, false, "0"); //publish to topic on boot
+  mqttClient.publish("/myroom/relay/boot", MQTT_QOS, false, "0"); //publish to topic on boot
   char ipaddr[16];
   sprintf(ipaddr, "%d.%d.%d.%d", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3] );
   //mqttClient.publish("test/lol", 1, true, "test 2");
-  mqttClient.publish("/myroom/relay/ip", 2, false, ipaddr);
+  mqttClient.publish("/myroom/relay/ip", MQTT_QOS, false, ipaddr);
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
@@ -290,7 +292,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       Serial.println("Relay 0 OFF");
       lastval0 = 1;
       Serial.println(lastval0);
-      mqttClient.publish("/myroom/relay/relState0", 2, false, "0"); //publish to topic
+      mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, "0"); //publish to topic
     }
     else if(payloadstr=="1")
     {
@@ -298,7 +300,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       Serial.println("Relay 0 ON"); 
       lastval0 = 0;
       Serial.println(lastval0);
-      mqttClient.publish("/myroom/relay/relState0", 2, false, "1"); //publish to topic
+      mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, "1"); //publish to topic
     }
   }
 
@@ -311,7 +313,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       Serial.println("Relay 1 OFF");
       lastval1 = 1;
       Serial.println(lastval1);
-      mqttClient.publish("/myroom/relay/relState1", 2, false, "0"); //publish to topic
+      mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, "0"); //publish to topic
     }
     else if(payloadstr=="1")
     {
@@ -319,7 +321,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       Serial.println("Relay 1 ON"); 
       lastval1 = 0;
       Serial.println(lastval1);
-      mqttClient.publish("/myroom/relay/relState1", 2, false, "1"); //publish to topic
+      mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, "1"); //publish to topic
     }
   }
 
@@ -332,7 +334,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       Serial.println("Relay 2 OFF");
       lastval2 = 1;
       Serial.println(lastval2);
-      mqttClient.publish("/myroom/relay/relState2", 2, false, "0"); //publish to topic
+      mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, "0"); //publish to topic
     }
     else if(payloadstr=="1")
     {
@@ -340,7 +342,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       Serial.println("Relay 2 ON"); 
       lastval2 = 0;
       Serial.println(lastval2);
-      mqttClient.publish("/myroom/relay/relState2", 2, false, "1"); //publish to topic
+      mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, "1"); //publish to topic
     }
   }
 
@@ -353,7 +355,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       Serial.println("Relay 3 OFF");
       lastval3 = 1;
       Serial.println(lastval3);
-      mqttClient.publish("/myroom/relay/relState3", 2, false, "0"); //publish to topic
+      mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, "0"); //publish to topic
     }
     else if(payloadstr=="1")
     {
@@ -361,7 +363,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       Serial.println("Relay 3 ON"); 
       lastval3 = 0;
       Serial.println(lastval3);
-      mqttClient.publish("/myroom/relay/relState3", 2, false, "1"); //publish to topic
+      mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, "1"); //publish to topic
     }
   }
 
@@ -387,7 +389,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       (int)REQ_STAT_CUR_MILLIS
     );  // convert string to char array for Millis. Elegance courtesy of Shahmi Technosparks
 
-    mqttClient.publish("/node_relay/curstat", 0, false, REQ_STAT_CUR_TEMPCHAR);
+    mqttClient.publish("/node_relay/curstat", MQTT_QOS, false, REQ_STAT_CUR_TEMPCHAR);
   }
 }
 
