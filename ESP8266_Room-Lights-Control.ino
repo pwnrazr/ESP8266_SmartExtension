@@ -109,6 +109,48 @@ void switchpolling()
   }
   lastButtonState0 = buttonState0;
   //END Relay 0 Switch
+
+  //START Relay 1 Switch
+  buttonState1 = mcp.digitalRead(5);
+  if (buttonState1 != lastButtonState1) //Relay 1
+  {
+    Serial.println("Changed STATE Relay 1");
+    mcp.digitalWrite(1, !lastval1);
+    itoa(lastval1, charval1, 10);
+    lastval1 = !lastval1;
+    Serial.println(lastval1);
+    mqttClient.publish("/myroom/relay/relState1", 2, false, charval1); //publish to topic
+  }
+  lastButtonState1 = buttonState1;
+  //END Relay 1 Switch
+
+  //START Relay 2 Switch
+  buttonState2 = mcp.digitalRead(6);
+  if (buttonState2 != lastButtonState2) //Relay 2
+  {
+    Serial.println("Changed STATE Relay 2");
+    mcp.digitalWrite(2, !lastval2);
+    itoa(lastval2, charval2, 10);
+    lastval2 = !lastval2;
+    Serial.println(lastval2);
+    mqttClient.publish("/myroom/relay/relState2", 2, false, charval2); //publish to topic
+  }
+  lastButtonState2 = buttonState2;
+  //END Relay 2 Switch
+
+  //START Relay 3 Switch
+  buttonState3 = mcp.digitalRead(7);
+  if (buttonState3 != lastButtonState3) //Relay 3
+  {
+    Serial.println("Changed STATE Relay 3");
+    mcp.digitalWrite(3, !lastval3);
+    itoa(lastval3, charval3, 10);
+    lastval3 = !lastval3;
+    Serial.println(lastval3);
+    mqttClient.publish("/myroom/relay/relState3", 2, false, charval3); //publish to topic
+  }
+  lastButtonState3 = buttonState3;
+  //END Relay 3 Switch
 }
 
 void otasetup() 
