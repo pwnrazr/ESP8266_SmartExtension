@@ -174,6 +174,26 @@ void callback(char* topic, byte* payload, unsigned int length)
     delay(1000);
     ESP.restart();
   }
+
+  if(topicstr == "/node_relay/reqstat")  // Request statistics function
+  {
+    unsigned long REQ_STAT_CUR_MILLIS = millis(); // gets current millis
+
+    char REQ_STAT_CUR_TEMPCHAR[60];
+
+    snprintf(
+      REQ_STAT_CUR_TEMPCHAR,
+      60, 
+      "%d.%d.%d.%d,%lu", 
+      WiFi.localIP()[0], 
+      WiFi.localIP()[1],
+      WiFi.localIP()[2], 
+      WiFi.localIP()[3],
+      (int)REQ_STAT_CUR_MILLIS
+    );  // convert string to char array for Millis. Elegance courtesy of Shahmi Technosparks
+
+    client.publish("/node_relay/curstat", REQ_STAT_CUR_TEMPCHAR);
+  }
 }
 
 void loop() 
