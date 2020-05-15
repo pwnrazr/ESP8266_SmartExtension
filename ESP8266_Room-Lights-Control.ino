@@ -16,7 +16,6 @@
 #include <Ticker.h>
 #include <AsyncMqttClient.h>
 #include <ArduinoOTA.h>
-
 #include "Adafruit_MCP23017.h"
 
 #include "settings.h"
