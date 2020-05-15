@@ -2,6 +2,11 @@
 
 void otasetup() 
 {
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(250);
+    Serial.print(".");
+  }
   // Port defaults to 8266
   // ArduinoOTA.setPort(8266);
 

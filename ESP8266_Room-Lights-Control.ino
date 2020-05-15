@@ -25,11 +25,6 @@ void setup()
 {
   Serial.begin(115200);
   commssetup();
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(250);
-    Serial.print(".");
-  }
   otasetup();
   mcp.begin();
 }
