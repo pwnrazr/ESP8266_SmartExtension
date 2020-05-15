@@ -364,6 +364,11 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       mqttClient.publish("/myroom/relay/relState3", 2, false, "1"); //publish to topic
     }
   }
+
+  if(strcmp((char*)topic, "/node_relay/reboot") == 0)
+  {
+    ESP.restart();
+  }
 }
 
 void onMqttPublish(uint16_t packetId) {
