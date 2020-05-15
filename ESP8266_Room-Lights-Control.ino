@@ -13,10 +13,13 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
+#include "Adafruit_MCP23017.h"
 
 #include "settings.h"
 #include "comms.h"
 #include "OTAfunc.h"
+
+Adafruit_MCP23017 mcp;
 
 void setup() 
 {
@@ -28,6 +31,7 @@ void setup()
     Serial.print(".");
   }
   otasetup();
+  mcp.begin();
 }
 
 void loop() 
