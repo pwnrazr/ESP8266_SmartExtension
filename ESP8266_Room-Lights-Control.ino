@@ -61,6 +61,7 @@ unsigned long switch_prevMillis = 0, heartbeat_prevMillis = 0, currentMillis;
 void setup() 
 {
   Serial.begin(115200);
+  WiFi.mode(WIFI_STA);
   commssetup();
   otasetup();
   mcp.begin();
