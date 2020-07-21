@@ -29,6 +29,9 @@ Ticker wifiReconnectTimer;
 
 Adafruit_MCP23017 mcp;
 
+//web server
+WiFiServer server(80);
+
 byte buttonState0 = 0;
 byte lastButtonState0 = 0;  
 
@@ -89,7 +92,9 @@ void loop()
   ArduinoOTA.handle();
   
   currentMillis = millis();
-
+  
+  webServerHandle();
+    
   if (currentMillis - switch_prevMillis >= switchInterval) 
   {
     switch_prevMillis = currentMillis;
@@ -227,6 +232,7 @@ void otasetup()
 void connectToWifi() {
   Serial.println("Connecting to Wi-Fi...");
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  server.begin();
 }
 
 void connectToMqtt() {
@@ -418,4 +424,149 @@ void commssetup() {
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
   mqttClient.setCredentials(MQTT_USER, MQTT_PASS);
   connectToWifi();
+}
+
+void webServerHandle(){
+  //web server begin
+  WiFiClient client = server.available();   // Listen for incoming clients
+
+  if (client) { // If there is a client...
+    boolean currentLineIsBlank = true;
+    String buffer = ""; // A buffer for the GET request
+    
+    while (client.connected()) {
+  
+      if (client.available()) {
+        char c = client.read();// Read the data of the client
+        buffer += c; // Store the data in a buffer
+        
+        if (c == '\n' && currentLineIsBlank) {// if 2x new line ==> Request ended
+          // send a standard http response header
+          client.println("HTTP/1.1 200 OK");
+          client.println("Content-Type: text/html");
+          client.println("Connection: close");
+          client.println(); // Blank line ==> end response
+          mqttClient.publish("node_relay/webservTest", 0, false, "Node Relay HTTP response");
+          break;
+        }
+        if (c == '\n') { // if New line
+          currentLineIsBlank = true;
+          buffer = "";  // Clear buffer
+        } else if (c == '\r') { // If cariage return...
+          //Read in the buffer if there was send "GET /?..."
+          
+          if(buffer.indexOf("GET /?relay0=0")>=0) { // If relay0 OFF
+            mcp.digitalWrite(0, HIGH);
+            Serial.println("Relay 0 OFF");
+            lastval0 = 1;
+            Serial.println(lastval0);
+            mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, "0"); //publish to topic
+            client.println("HTTP/1.1 200 relay0,off");
+          }
+          if(buffer.indexOf("GET /?relay0=1")>=0) { // If relay0 ON
+            mcp.digitalWrite(0, LOW);
+            Serial.println("Relay 0 ON"); 
+            lastval0 = 0;
+            Serial.println(lastval0);
+            mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, "1"); //publish to topic
+            client.println("HTTP/1.1 200 relay0,on");
+          }
+
+          if(buffer.indexOf("GET /?relay1=0")>=0) { // If relay1 OFF
+            mcp.digitalWrite(1, HIGH);
+            Serial.println("Relay 1 OFF");
+            lastval1 = 1;
+            Serial.println(lastval1);
+            mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, "0"); //publish to topic
+            client.println("HTTP/1.1 200 relay1,off");
+          }
+          if(buffer.indexOf("GET /?relay1=1")>=0) { // If relay1 ON
+            mcp.digitalWrite(1, LOW);
+            Serial.println("Relay 1 ON"); 
+            lastval1 = 0;
+            Serial.println(lastval1);
+            mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, "1"); //publish to topic
+            client.println("HTTP/1.1 200 relay1,on");
+          }
+          
+          if(buffer.indexOf("GET /?relay2=0")>=0) { // If relay2 OFF
+            mcp.digitalWrite(2, HIGH);
+            Serial.println("Relay 2 OFF");
+            lastval2 = 1;
+            Serial.println(lastval2);
+            mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, "0"); //publish to topic
+            client.println("HTTP/1.1 200 relay2,off");
+          }
+          if(buffer.indexOf("GET /?relay2=1")>=0) { // If relay2 ON
+            mcp.digitalWrite(2, LOW);
+            Serial.println("Relay 2 ON"); 
+            lastval2 = 0;
+            Serial.println(lastval2);
+            mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, "1"); //publish to topic
+            client.println("HTTP/1.1 200 relay2,on");
+          }
+
+          if(buffer.indexOf("GET /?relay3=0")>=0) { // If relay3 OFF
+            mcp.digitalWrite(3, HIGH);
+            Serial.println("Relay 3 OFF");
+            lastval3 = 1;
+            Serial.println(lastval3);
+            mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, "0"); //publish to topic
+            client.println("HTTP/1.1 200 relay3,off");
+          }
+          if(buffer.indexOf("GET /?relay3=1")>=0) { // If relay3 ON
+            mcp.digitalWrite(3, LOW);
+            Serial.println("Relay 3 ON"); 
+            lastval3 = 0;
+            Serial.println(lastval3);
+            mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, "1"); //publish to topic
+            client.println("HTTP/1.1 200 relay3,on");
+          }
+          /////////////////////////////
+          if(buffer.indexOf("GET /?req_relay0")>=0) { // App request of relay0 status
+            if(mcp.digitalRead(0)==LOW)
+            {
+              client.println("HTTP/1.1 200 relay0,on");
+            }
+            else{
+              client.println("HTTP/1.1 200 relay0,off");
+            }
+          }
+          if(buffer.indexOf("GET /?req_relay1")>=0) { // App request of relay1 status
+            if(mcp.digitalRead(1)==LOW)
+            {
+              client.println("HTTP/1.1 200 relay1,on");
+            }
+            else{
+              client.println("HTTP/1.1 200 relay1,off");
+            }
+          }
+          if(buffer.indexOf("GET /?req_relay2")>=0) { // App request of relay2 status
+            if(mcp.digitalRead(2)==LOW)
+            {
+              client.println("HTTP/1.1 200 relay2,on");
+            }
+            else{
+              client.println("HTTP/1.1 200 relay2,off");
+            }
+          }
+          if(buffer.indexOf("GET /?req_relay3")>=0) { // App request of relay3 status
+            if(mcp.digitalRead(3)==LOW)
+            {
+              client.println("HTTP/1.1 200 relay3,on");
+            }
+            else{
+              client.println("HTTP/1.1 200 relay3,off");
+            }
+          }
+          
+        } else {
+          currentLineIsBlank = false;
+        }
+      }
+    }
+    delay(1);
+    client.stop();
+  }
+  //web server end
 }
