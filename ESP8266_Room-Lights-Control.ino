@@ -461,7 +461,7 @@ void webServerHandle(){
             lastval0 = 1;
             Serial.println(lastval0);
             mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, "0"); //publish to topic
-            client.println("HTTP/1.1 200 relay0,off");
+            client.println("HTTP/1.1 200 ack,ack");
           }
           if(buffer.indexOf("GET /?relay0=1")>=0) { // If relay0 ON
             mcp.digitalWrite(0, LOW);
@@ -469,7 +469,7 @@ void webServerHandle(){
             lastval0 = 0;
             Serial.println(lastval0);
             mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, "1"); //publish to topic
-            client.println("HTTP/1.1 200 relay0,on");
+            client.println("HTTP/1.1 200 ack,ack");
           }
 
           if(buffer.indexOf("GET /?relay1=0")>=0) { // If relay1 OFF
@@ -478,7 +478,7 @@ void webServerHandle(){
             lastval1 = 1;
             Serial.println(lastval1);
             mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, "0"); //publish to topic
-            client.println("HTTP/1.1 200 relay1,off");
+            client.println("HTTP/1.1 200 ack,ack");
           }
           if(buffer.indexOf("GET /?relay1=1")>=0) { // If relay1 ON
             mcp.digitalWrite(1, LOW);
@@ -486,7 +486,7 @@ void webServerHandle(){
             lastval1 = 0;
             Serial.println(lastval1);
             mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, "1"); //publish to topic
-            client.println("HTTP/1.1 200 relay1,on");
+            client.println("HTTP/1.1 200 ack,ack");
           }
           
           if(buffer.indexOf("GET /?relay2=0")>=0) { // If relay2 OFF
@@ -495,7 +495,7 @@ void webServerHandle(){
             lastval2 = 1;
             Serial.println(lastval2);
             mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, "0"); //publish to topic
-            client.println("HTTP/1.1 200 relay2,off");
+            client.println("HTTP/1.1 200 ack,ack");
           }
           if(buffer.indexOf("GET /?relay2=1")>=0) { // If relay2 ON
             mcp.digitalWrite(2, LOW);
@@ -503,7 +503,7 @@ void webServerHandle(){
             lastval2 = 0;
             Serial.println(lastval2);
             mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, "1"); //publish to topic
-            client.println("HTTP/1.1 200 relay2,on");
+            client.println("HTTP/1.1 200 ack,ack");
           }
 
           if(buffer.indexOf("GET /?relay3=0")>=0) { // If relay3 OFF
@@ -512,7 +512,7 @@ void webServerHandle(){
             lastval3 = 1;
             Serial.println(lastval3);
             mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, "0"); //publish to topic
-            client.println("HTTP/1.1 200 relay3,off");
+            client.println("HTTP/1.1 200 ack,ack");
           }
           if(buffer.indexOf("GET /?relay3=1")>=0) { // If relay3 ON
             mcp.digitalWrite(3, LOW);
@@ -520,7 +520,7 @@ void webServerHandle(){
             lastval3 = 0;
             Serial.println(lastval3);
             mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, "1"); //publish to topic
-            client.println("HTTP/1.1 200 relay3,on");
+            client.println("HTTP/1.1 200 ack,ack");
           }
           /////////////////////////////
           if(buffer.indexOf("GET /?req_relay0")>=0) { // App request of relay0 status
