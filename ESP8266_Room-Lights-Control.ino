@@ -17,6 +17,8 @@
 #include <AsyncMqttClient.h>
 #include <ArduinoOTA.h>
 #include "Adafruit_MCP23017.h"
+#include <ESPAsyncTCP.h>
+#include <ESPAsyncWebServer.h>
 
 #include "settings.h"
 
@@ -28,6 +30,8 @@ WiFiEventHandler wifiDisconnectHandler;
 Ticker wifiReconnectTimer;
 
 Adafruit_MCP23017 mcp;
+
+AsyncWebServer server(80); // WebServ
 
 byte buttonState0 = 0;
 byte lastButtonState0 = 0;  
@@ -64,6 +68,7 @@ void setup()
   WiFi.mode(WIFI_STA);
   commssetup();
   otasetup();
+  webServSetup();   // Web Serv
   mcp.begin();
 
   mcp.pinMode(0, OUTPUT);
@@ -419,3 +424,117 @@ void commssetup() {
   mqttClient.setCredentials(MQTT_USER, MQTT_PASS);
   connectToWifi();
 }
+
+// WebServ
+void notFound(AsyncWebServerRequest *request) {
+    request->send(404, "text/plain", "NODE_RELAY: ERROR");
+}
+
+void webServSetup() {   // webServ - processing things go here
+    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+        request->send(200, "text/plain", "Pwnrazr's node relay here");
+    });
+
+    // Send/Receive status status
+    // relay0
+    server.on("/req_relay0", HTTP_GET, [](AsyncWebServerRequest *request){
+      if(mcp.digitalRead(0)==LOW) {
+        request->send(200, "text/plain", "relay0,on");
+      } else {
+        request->send(200, "text/plain", "relay0,off");
+      }
+    });
+    // relay1
+    server.on("/req_relay1", HTTP_GET, [](AsyncWebServerRequest *request){
+      if(mcp.digitalRead(1)==LOW) {
+        request->send(200, "text/plain", "relay1,on");
+      } else {
+        request->send(200, "text/plain", "relay1,off");
+      }
+    });
+    // relay2
+    server.on("/req_relay2", HTTP_GET, [](AsyncWebServerRequest *request){
+      if(mcp.digitalRead(2)==LOW) {
+        request->send(200, "text/plain", "relay2,on");
+      } else {
+        request->send(200, "text/plain", "relay2,off");
+      }
+    });
+    // relay3
+    server.on("/req_relay3", HTTP_GET, [](AsyncWebServerRequest *request){
+      if(mcp.digitalRead(3)==LOW) {
+        request->send(200, "text/plain", "relay3,on");
+      } else {
+        request->send(200, "text/plain", "relay3,off");
+      }
+    });
+    // Receive commands
+    // relay0
+    server.on("/relay0=0", HTTP_GET, [](AsyncWebServerRequest *request){
+      mcp.digitalWrite(0, HIGH);
+      Serial.println("Relay 0 OFF");
+      lastval0 = 1;
+      Serial.println(lastval0);
+      mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, "0"); //publish to topic
+    });
+    server.on("/relay0=1", HTTP_GET, [](AsyncWebServerRequest *request){
+      mcp.digitalWrite(0, LOW);
+      Serial.println("Relay 0 ON"); 
+      lastval0 = 0;
+      Serial.println(lastval0);
+      mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, "1"); //publish to topic
+    });
+    // relay1
+    server.on("/relay1=0", HTTP_GET, [](AsyncWebServerRequest *request){
+      mcp.digitalWrite(1, HIGH);
+      Serial.println("Relay 1 OFF");
+      lastval1 = 1;
+      Serial.println(lastval1);
+      mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, "0"); //publish to topic
+
+    });
+    server.on("/relay1=1", HTTP_GET, [](AsyncWebServerRequest *request){
+      mcp.digitalWrite(1, LOW);
+      Serial.println("Relay 1 ON"); 
+      lastval1 = 0;
+      Serial.println(lastval1);
+      mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, "1"); //publish to topic
+    });
+    // relay2
+    server.on("/relay2=0", HTTP_GET, [](AsyncWebServerRequest *request){
+      mcp.digitalWrite(2, HIGH);
+      Serial.println("Relay 2 OFF");
+      lastval2 = 1;
+      Serial.println(lastval2);
+      mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, "0"); //publish to topic
+
+    });
+    server.on("/relay2=1", HTTP_GET, [](AsyncWebServerRequest *request){
+      mcp.digitalWrite(2, LOW);
+      Serial.println("Relay 2 ON"); 
+      lastval2 = 0;
+      Serial.println(lastval2);
+      mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, "1"); //publish to topic
+    });
+    // relay3
+    server.on("/relay3=0", HTTP_GET, [](AsyncWebServerRequest *request){
+      mcp.digitalWrite(3, HIGH);
+      Serial.println("Relay 3 OFF");
+      lastval3 = 1;
+      Serial.println(lastval3);
+      mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, "0"); //publish to topic
+
+    });
+    server.on("/relay3=1", HTTP_GET, [](AsyncWebServerRequest *request){
+      mcp.digitalWrite(3, LOW);
+      Serial.println("Relay 3 ON"); 
+      lastval3 = 0;
+      Serial.println(lastval3);
+      mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, "1"); //publish to topic
+    });
+    //end
+    server.onNotFound(notFound);
+
+    server.begin();
+}
+// WebServ
