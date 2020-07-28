@@ -476,6 +476,7 @@ void webServSetup() {   // webServ - processing things go here
       lastval0 = 1;
       Serial.println(lastval0);
       mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, "0"); //publish to topic
+      request->send(204);
     });
     server.on("/relay0=1", HTTP_GET, [](AsyncWebServerRequest *request){
       mcp.digitalWrite(0, LOW);
@@ -483,6 +484,7 @@ void webServSetup() {   // webServ - processing things go here
       lastval0 = 0;
       Serial.println(lastval0);
       mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, "1"); //publish to topic
+      request->send(204);
     });
     // relay1
     server.on("/relay1=0", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -491,7 +493,7 @@ void webServSetup() {   // webServ - processing things go here
       lastval1 = 1;
       Serial.println(lastval1);
       mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, "0"); //publish to topic
-
+      request->send(204);
     });
     server.on("/relay1=1", HTTP_GET, [](AsyncWebServerRequest *request){
       mcp.digitalWrite(1, LOW);
@@ -499,6 +501,7 @@ void webServSetup() {   // webServ - processing things go here
       lastval1 = 0;
       Serial.println(lastval1);
       mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, "1"); //publish to topic
+      request->send(204);
     });
     // relay2
     server.on("/relay2=0", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -507,7 +510,7 @@ void webServSetup() {   // webServ - processing things go here
       lastval2 = 1;
       Serial.println(lastval2);
       mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, "0"); //publish to topic
-
+      request->send(204);
     });
     server.on("/relay2=1", HTTP_GET, [](AsyncWebServerRequest *request){
       mcp.digitalWrite(2, LOW);
@@ -515,6 +518,7 @@ void webServSetup() {   // webServ - processing things go here
       lastval2 = 0;
       Serial.println(lastval2);
       mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, "1"); //publish to topic
+      request->send(204);
     });
     // relay3
     server.on("/relay3=0", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -523,7 +527,7 @@ void webServSetup() {   // webServ - processing things go here
       lastval3 = 1;
       Serial.println(lastval3);
       mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, "0"); //publish to topic
-
+      request->send(204);
     });
     server.on("/relay3=1", HTTP_GET, [](AsyncWebServerRequest *request){
       mcp.digitalWrite(3, LOW);
@@ -531,6 +535,7 @@ void webServSetup() {   // webServ - processing things go here
       lastval3 = 0;
       Serial.println(lastval3);
       mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, "1"); //publish to topic
+      request->send(204);
     });
     //end
     server.onNotFound(notFound);
