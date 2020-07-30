@@ -45,11 +45,6 @@ byte lastButtonState2 = 0;
 byte buttonState3 = 0;
 byte lastButtonState3 = 0;  
 
-char charval0[1];
-char charval1[1];
-char charval2[1];
-char charval3[1];
-
 unsigned long switch_prevMillis = 0, heartbeat_prevMillis = 0, currentMillis;
 
 #define switchInterval 200
@@ -119,9 +114,7 @@ void switchpolling()
   buttonState0 = mcp.digitalRead(4);
   if (buttonState0 != lastButtonState0) //Relay 0
   {
-    itoa(mcp.digitalRead(0), charval0, 10);
-    mcp.digitalWrite(0, !mcp.digitalRead(0));
-    mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, charval0); //publish to topic
+    setRelay(0, !mcp.digitalRead(0));
   }
   lastButtonState0 = buttonState0;
   //END Relay 0 Switch
@@ -130,9 +123,7 @@ void switchpolling()
   buttonState1 = mcp.digitalRead(5);
   if (buttonState1 != lastButtonState1) //Relay 1
   {
-    itoa(mcp.digitalRead(1), charval1, 10);
-    mcp.digitalWrite(1, !mcp.digitalRead(1));
-    mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, charval1); //publish to topic
+    setRelay(1, !mcp.digitalRead(1));
   }
   lastButtonState1 = buttonState1;
   //END Relay 1 Switch
@@ -141,9 +132,7 @@ void switchpolling()
   buttonState2 = mcp.digitalRead(6);
   if (buttonState2 != lastButtonState2) //Relay 2
   {
-    itoa(mcp.digitalRead(2), charval2, 10);
-    mcp.digitalWrite(2, !mcp.digitalRead(2));
-    mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, charval2); //publish to topic
+    setRelay(2, !mcp.digitalRead(2));
   }
   lastButtonState2 = buttonState2;
   //END Relay 2 Switch
@@ -152,9 +141,7 @@ void switchpolling()
   buttonState3 = mcp.digitalRead(7);
   if (buttonState3 != lastButtonState3) //Relay 3
   {
-    itoa(mcp.digitalRead(3), charval3, 10);
-    mcp.digitalWrite(3, !mcp.digitalRead(3));
-    mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, charval3); //publish to topic
+    setRelay(3, !mcp.digitalRead(3));
   }
   lastButtonState3 = buttonState3;
   //END Relay 3 Switch
@@ -266,71 +253,38 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   //Serial.println(topic);
   
   String payloadstr;
-
+  int payloadint;
+  
   for (int i = 0; i < len; i++) 
   {
     payloadstr = String(payloadstr + (char)payload[i]);  //convert payload to string
   }
   //Serial.println(payloadstr);
 
+  payloadint = atoi(payload);  // Convert payload to integer
+  
   //Relay 0
   if(strcmp((char*)topic, "/myroom/relay/0") == 0)
   {
-    if(payloadstr=="0") 
-    {
-      mcp.digitalWrite(0, HIGH);
-      mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, "0"); //publish to topic
-    }
-    else if(payloadstr=="1")
-    {
-      mcp.digitalWrite(0, LOW);
-      mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, "1"); //publish to topic
-    }
+    setRelay(0, !payloadint);
   }
 
   //Relay 1
   if(strcmp((char*)topic, "/myroom/relay/1") == 0)
   {
-    if(payloadstr=="0") 
-    {
-      mcp.digitalWrite(1, HIGH);
-      mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, "0"); //publish to topic
-    }
-    else if(payloadstr=="1")
-    {
-      mcp.digitalWrite(1, LOW);
-      mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, "1"); //publish to topic
-    }
+    setRelay(1, !payloadint);
   }
 
   //Relay 2
   if(strcmp((char*)topic, "/myroom/relay/2") == 0)
   {
-    if(payloadstr=="0") 
-    {
-      mcp.digitalWrite(2, HIGH);
-      mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, "0"); //publish to topic
-    }
-    else if(payloadstr=="1")
-    {
-      mcp.digitalWrite(2, LOW);
-      mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, "1"); //publish to topic
-    }
+    setRelay(2, !payloadint);
   }
 
   //Relay 3
   if(strcmp((char*)topic, "/myroom/relay/3") == 0)
   {
-    if(payloadstr=="0") 
-    {
-      mcp.digitalWrite(3, HIGH);
-      mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, "0"); //publish to topic
-    }
-    else if(payloadstr=="1")
-    {
-      mcp.digitalWrite(3, LOW);
-      mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, "1"); //publish to topic
-    }
+    setRelay(3, !payloadint);
   }
 
   if(strcmp((char*)topic, "/node_relay/reboot") == 0)
@@ -423,46 +377,38 @@ void webServSetup() {   // webServ - processing things go here
     // Receive commands
     // relay0
     server.on("/relay0=0", HTTP_GET, [](AsyncWebServerRequest *request){
-      mcp.digitalWrite(0, HIGH);
-      mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, "0"); //publish to topic
+      setRelay(0, 1);
       request->send(204);
     });
     server.on("/relay0=1", HTTP_GET, [](AsyncWebServerRequest *request){
-      mcp.digitalWrite(0, LOW);
-      mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, "1"); //publish to topic
+      setRelay(0, 0);
       request->send(204);
     });
     // relay1
     server.on("/relay1=0", HTTP_GET, [](AsyncWebServerRequest *request){
-      mcp.digitalWrite(1, HIGH);
-      mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, "0"); //publish to topic
+      setRelay(1, 1);
       request->send(204);
     });
     server.on("/relay1=1", HTTP_GET, [](AsyncWebServerRequest *request){
-      mcp.digitalWrite(1, LOW);
-      mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, "1"); //publish to topic
+      setRelay(1, 0);
       request->send(204);
     });
     // relay2
     server.on("/relay2=0", HTTP_GET, [](AsyncWebServerRequest *request){
-      mcp.digitalWrite(2, HIGH);
-      mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, "0"); //publish to topic
+      setRelay(2, 1);
       request->send(204);
     });
     server.on("/relay2=1", HTTP_GET, [](AsyncWebServerRequest *request){
-      mcp.digitalWrite(2, LOW);
-      mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, "1"); //publish to topic
+      setRelay(2, 0);
       request->send(204);
     });
     // relay3
     server.on("/relay3=0", HTTP_GET, [](AsyncWebServerRequest *request){
-      mcp.digitalWrite(3, HIGH);
-      mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, "0"); //publish to topic
+      setRelay(3, 1);
       request->send(204);
     });
     server.on("/relay3=1", HTTP_GET, [](AsyncWebServerRequest *request){
-      mcp.digitalWrite(3, LOW);
-      mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, "1"); //publish to topic
+      setRelay(3, 0);
       request->send(204);
     });
     //end
@@ -471,3 +417,18 @@ void webServSetup() {   // webServ - processing things go here
     server.begin();
 }
 // WebServ
+
+void setRelay(int relay, int state) 
+{ // Note: relays are active LOW
+  char charState[2];
+  char charRelay[2];
+  char relState[23] = "/myroom/relay/relState";
+  
+  itoa(!state, charState, 10);    // Invert charState from state as relay is active LOW, prevents Blynk seeing ON as OFF
+  itoa(relay, charRelay, 10);
+  
+  strcat(relState, charRelay);    // Append charRelay to relState
+  
+  mcp.digitalWrite(relay, state);
+  mqttClient.publish(relState, MQTT_QOS, false, charState); //publish to topic
+}
