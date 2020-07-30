@@ -81,6 +81,12 @@ void setup()
   
   mcp.pinMode(7, INPUT);
   mcp.pullUp(7, HIGH);  // turn on a 100K pullup internally
+
+  // Properly set last button states
+  lastButtonState0 = mcp.digitalRead(4);
+  lastButtonState1 = mcp.digitalRead(5);
+  lastButtonState2 = mcp.digitalRead(6);
+  lastButtonState3 = mcp.digitalRead(7);
 }
 
 void loop() 
