@@ -64,7 +64,6 @@ unsigned long switch_prevMillis = 0, heartbeat_prevMillis = 0, currentMillis;
 
 void setup() 
 {
-  Serial.begin(115200);
   WiFi.mode(WIFI_STA);
   commssetup();
   otasetup();
@@ -119,11 +118,9 @@ void switchpolling()
   buttonState0 = mcp.digitalRead(4);
   if (buttonState0 != lastButtonState0) //Relay 0
   {
-    Serial.println("Changed STATE Relay 0");
     mcp.digitalWrite(0, !lastval0);
     itoa(lastval0, charval0, 10);
     lastval0 = !lastval0;
-    Serial.println(lastval0);
     mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, charval0); //publish to topic
   }
   lastButtonState0 = buttonState0;
@@ -133,11 +130,9 @@ void switchpolling()
   buttonState1 = mcp.digitalRead(5);
   if (buttonState1 != lastButtonState1) //Relay 1
   {
-    Serial.println("Changed STATE Relay 1");
     mcp.digitalWrite(1, !lastval1);
     itoa(lastval1, charval1, 10);
     lastval1 = !lastval1;
-    Serial.println(lastval1);
     mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, charval1); //publish to topic
   }
   lastButtonState1 = buttonState1;
@@ -147,11 +142,9 @@ void switchpolling()
   buttonState2 = mcp.digitalRead(6);
   if (buttonState2 != lastButtonState2) //Relay 2
   {
-    Serial.println("Changed STATE Relay 2");
     mcp.digitalWrite(2, !lastval2);
     itoa(lastval2, charval2, 10);
     lastval2 = !lastval2;
-    Serial.println(lastval2);
     mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, charval2); //publish to topic
   }
   lastButtonState2 = buttonState2;
@@ -161,11 +154,9 @@ void switchpolling()
   buttonState3 = mcp.digitalRead(7);
   if (buttonState3 != lastButtonState3) //Relay 3
   {
-    Serial.println("Changed STATE Relay 3");
     mcp.digitalWrite(3, !lastval3);
     itoa(lastval3, charval3, 10);
     lastval3 = !lastval3;
-    Serial.println(lastval3);
     mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, charval3); //publish to topic
   }
   lastButtonState3 = buttonState3;
@@ -177,7 +168,6 @@ void otasetup()
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(250);
-    Serial.print(".");
   }
   // Port defaults to 8266
   // ArduinoOTA.setPort(8266);
@@ -201,58 +191,52 @@ void otasetup()
     }
 
     // NOTE: if updating FS this would be the place to unmount FS using FS.end()
-    Serial.println("Start updating " + type);
+    //Serial.println("Start updating " + type);
   });
   ArduinoOTA.onEnd([]() {
-    Serial.println("\nEnd");
+    //Serial.println("\nEnd");
   });
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-    Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+    //Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
   });
   ArduinoOTA.onError([](ota_error_t error) {
-    Serial.printf("Error[%u]: ", error);
+    //Serial.printf("Error[%u]: ", error);
     if (error == OTA_AUTH_ERROR) {
-      Serial.println("Auth Failed");
+      //Serial.println("Auth Failed");
     } else if (error == OTA_BEGIN_ERROR) {
-      Serial.println("Begin Failed");
+      //Serial.println("Begin Failed");
     } else if (error == OTA_CONNECT_ERROR) {
-      Serial.println("Connect Failed");
+      //Serial.println("Connect Failed");
     } else if (error == OTA_RECEIVE_ERROR) {
       Serial.println("Receive Failed");
     } else if (error == OTA_END_ERROR) {
-      Serial.println("End Failed");
+      //Serial.println("End Failed");
     }
   });
   ArduinoOTA.begin();
-  Serial.println("OTA Ready");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
+  //Serial.println("OTA Ready");
+  //Serial.print("IP address: ");
+  //Serial.println(WiFi.localIP());
 }
 
 void connectToWifi() {
-  Serial.println("Connecting to Wi-Fi...");
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 }
 
 void connectToMqtt() {
-  Serial.println("Connecting to MQTT...");
   mqttClient.connect();
 }
 
 void onWifiConnect(const WiFiEventStationModeGotIP& event) {
-  Serial.println("Connected to Wi-Fi.");
   connectToMqtt();
 }
 
 void onWifiDisconnect(const WiFiEventStationModeDisconnected& event) {
-  Serial.println("Disconnected from Wi-Fi.");
   mqttReconnectTimer.detach(); // ensure we don't reconnect to MQTT while reconnecting to Wi-Fi
   wifiReconnectTimer.once(2, connectToWifi);
 }
 
 void onMqttConnect(bool sessionPresent) {
-  Serial.println("Connected to MQTT.");
-  Serial.println("Subscribing...");
   //mqttClient.subscribe("test/lol", 2);
   mqttClient.subscribe("/myroom/relay/0", MQTT_QOS);
   mqttClient.subscribe("/myroom/relay/1", MQTT_QOS);
@@ -269,8 +253,6 @@ void onMqttConnect(bool sessionPresent) {
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
-  Serial.println("Disconnected from MQTT.");
-
   if (WiFi.isConnected()) {
     mqttReconnectTimer.once(2, connectToMqtt);
   }
@@ -283,8 +265,8 @@ void onMqttUnsubscribe(uint16_t packetId) {
 }
 
 void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
-  Serial.println("Publish received.");
-  Serial.println(topic);
+  //Serial.println("Publish received.");
+  //Serial.println(topic);
   
   String payloadstr;
 
@@ -292,7 +274,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   {
     payloadstr = String(payloadstr + (char)payload[i]);  //convert payload to string
   }
-  Serial.println(payloadstr);
+  //Serial.println(payloadstr);
 
   //Relay 0
   if(strcmp((char*)topic, "/myroom/relay/0") == 0)
@@ -300,17 +282,13 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
     if(payloadstr=="0") 
     {
       mcp.digitalWrite(0, HIGH);
-      Serial.println("Relay 0 OFF");
       lastval0 = 1;
-      Serial.println(lastval0);
       mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, "0"); //publish to topic
     }
     else if(payloadstr=="1")
     {
       mcp.digitalWrite(0, LOW);
-      Serial.println("Relay 0 ON"); 
       lastval0 = 0;
-      Serial.println(lastval0);
       mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, "1"); //publish to topic
     }
   }
@@ -321,17 +299,13 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
     if(payloadstr=="0") 
     {
       mcp.digitalWrite(1, HIGH);
-      Serial.println("Relay 1 OFF");
       lastval1 = 1;
-      Serial.println(lastval1);
       mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, "0"); //publish to topic
     }
     else if(payloadstr=="1")
     {
       mcp.digitalWrite(1, LOW);
-      Serial.println("Relay 1 ON"); 
       lastval1 = 0;
-      Serial.println(lastval1);
       mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, "1"); //publish to topic
     }
   }
@@ -342,17 +316,13 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
     if(payloadstr=="0") 
     {
       mcp.digitalWrite(2, HIGH);
-      Serial.println("Relay 2 OFF");
       lastval2 = 1;
-      Serial.println(lastval2);
       mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, "0"); //publish to topic
     }
     else if(payloadstr=="1")
     {
       mcp.digitalWrite(2, LOW);
-      Serial.println("Relay 2 ON"); 
       lastval2 = 0;
-      Serial.println(lastval2);
       mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, "1"); //publish to topic
     }
   }
@@ -363,17 +333,13 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
     if(payloadstr=="0") 
     {
       mcp.digitalWrite(3, HIGH);
-      Serial.println("Relay 3 OFF");
       lastval3 = 1;
-      Serial.println(lastval3);
       mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, "0"); //publish to topic
     }
     else if(payloadstr=="1")
     {
       mcp.digitalWrite(3, LOW);
-      Serial.println("Relay 3 ON"); 
       lastval3 = 0;
-      Serial.println(lastval3);
       mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, "1"); //publish to topic
     }
   }
@@ -408,9 +374,6 @@ void onMqttPublish(uint16_t packetId) {
 }
 
 void commssetup() {
-  Serial.println();
-  Serial.println();
-
   wifiConnectHandler = WiFi.onStationModeGotIP(onWifiConnect);
   wifiDisconnectHandler = WiFi.onStationModeDisconnected(onWifiDisconnect);
 
@@ -472,68 +435,52 @@ void webServSetup() {   // webServ - processing things go here
     // relay0
     server.on("/relay0=0", HTTP_GET, [](AsyncWebServerRequest *request){
       mcp.digitalWrite(0, HIGH);
-      Serial.println("Relay 0 OFF");
       lastval0 = 1;
-      Serial.println(lastval0);
       mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, "0"); //publish to topic
       request->send(204);
     });
     server.on("/relay0=1", HTTP_GET, [](AsyncWebServerRequest *request){
       mcp.digitalWrite(0, LOW);
-      Serial.println("Relay 0 ON"); 
       lastval0 = 0;
-      Serial.println(lastval0);
       mqttClient.publish("/myroom/relay/relState0", MQTT_QOS, false, "1"); //publish to topic
       request->send(204);
     });
     // relay1
     server.on("/relay1=0", HTTP_GET, [](AsyncWebServerRequest *request){
       mcp.digitalWrite(1, HIGH);
-      Serial.println("Relay 1 OFF");
       lastval1 = 1;
-      Serial.println(lastval1);
       mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, "0"); //publish to topic
       request->send(204);
     });
     server.on("/relay1=1", HTTP_GET, [](AsyncWebServerRequest *request){
       mcp.digitalWrite(1, LOW);
-      Serial.println("Relay 1 ON"); 
       lastval1 = 0;
-      Serial.println(lastval1);
       mqttClient.publish("/myroom/relay/relState1", MQTT_QOS, false, "1"); //publish to topic
       request->send(204);
     });
     // relay2
     server.on("/relay2=0", HTTP_GET, [](AsyncWebServerRequest *request){
       mcp.digitalWrite(2, HIGH);
-      Serial.println("Relay 2 OFF");
       lastval2 = 1;
-      Serial.println(lastval2);
       mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, "0"); //publish to topic
       request->send(204);
     });
     server.on("/relay2=1", HTTP_GET, [](AsyncWebServerRequest *request){
       mcp.digitalWrite(2, LOW);
-      Serial.println("Relay 2 ON"); 
       lastval2 = 0;
-      Serial.println(lastval2);
       mqttClient.publish("/myroom/relay/relState2", MQTT_QOS, false, "1"); //publish to topic
       request->send(204);
     });
     // relay3
     server.on("/relay3=0", HTTP_GET, [](AsyncWebServerRequest *request){
       mcp.digitalWrite(3, HIGH);
-      Serial.println("Relay 3 OFF");
       lastval3 = 1;
-      Serial.println(lastval3);
       mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, "0"); //publish to topic
       request->send(204);
     });
     server.on("/relay3=1", HTTP_GET, [](AsyncWebServerRequest *request){
       mcp.digitalWrite(3, LOW);
-      Serial.println("Relay 3 ON"); 
       lastval3 = 0;
-      Serial.println(lastval3);
       mqttClient.publish("/myroom/relay/relState3", MQTT_QOS, false, "1"); //publish to topic
       request->send(204);
     });
