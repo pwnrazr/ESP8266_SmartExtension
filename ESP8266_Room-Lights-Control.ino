@@ -114,7 +114,7 @@ void switchpolling()
   buttonState0 = mcp.digitalRead(4);
   if (buttonState0 != lastButtonState0) //Relay 0
   {
-    setRelay(0, !mcp.digitalRead(0));
+    setRelay(0, buttonState0);
   }
   lastButtonState0 = buttonState0;
   //END Relay 0 Switch
@@ -123,7 +123,7 @@ void switchpolling()
   buttonState1 = mcp.digitalRead(5);
   if (buttonState1 != lastButtonState1) //Relay 1
   {
-    setRelay(1, !mcp.digitalRead(1));
+    setRelay(1, buttonState1);
   }
   lastButtonState1 = buttonState1;
   //END Relay 1 Switch
@@ -132,7 +132,7 @@ void switchpolling()
   buttonState2 = mcp.digitalRead(6);
   if (buttonState2 != lastButtonState2) //Relay 2
   {
-    setRelay(2, !mcp.digitalRead(2));
+    setRelay(2, buttonState2);
   }
   lastButtonState2 = buttonState2;
   //END Relay 2 Switch
@@ -141,7 +141,7 @@ void switchpolling()
   buttonState3 = mcp.digitalRead(7);
   if (buttonState3 != lastButtonState3) //Relay 3
   {
-    setRelay(3, !mcp.digitalRead(3));
+    setRelay(3, buttonState3);
   }
   lastButtonState3 = buttonState3;
   //END Relay 3 Switch
