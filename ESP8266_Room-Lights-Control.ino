@@ -309,7 +309,7 @@ void setRelay(int relay, int state)
 { // Note: relays are active LOW
   char charState[2];
   char charRelay[2];
-  char relState[23] = "/myroom/relay/relState";
+  char relState[23] = "noderelay/relayState";
   
   itoa(!state, charState, 10);    // Invert charState from state as relay is active LOW, prevents Blynk seeing ON as OFF
   itoa(relay, charRelay, 10);
