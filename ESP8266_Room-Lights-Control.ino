@@ -17,8 +17,6 @@
 #include <AsyncMqttClient.h>
 #include <ArduinoOTA.h>
 #include <Adafruit_MCP23X17.h>
-#include <ESPAsyncTCP.h>
-#include <ESPAsyncWebServer.h>
 
 #include "settings.h"
 
@@ -30,8 +28,6 @@ WiFiEventHandler wifiDisconnectHandler;
 Ticker wifiReconnectTimer;
 
 Adafruit_MCP23X17 mcp;
-
-AsyncWebServer server(80); // WebServ
 
 byte buttonState0 = 0;
 byte lastButtonState0 = 0;  
@@ -57,7 +53,6 @@ void setup()
   WiFi.mode(WIFI_STA);
   commssetup();
   otasetup();
-  webServSetup();   // Web Serv
   mcp.begin_I2C();
 
   mcp.pinMode(0, OUTPUT);
@@ -309,93 +304,6 @@ void commssetup() {
   mqttClient.setCredentials(MQTT_USER, MQTT_PASS);
   connectToWifi();
 }
-
-// WebServ
-void notFound(AsyncWebServerRequest *request) {
-    request->send(404, "text/plain", "NODE_RELAY: ERROR");
-}
-
-void webServSetup() {   // webServ - processing things go here
-    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-        request->send(200, "text/plain", "Pwnrazr's node relay here");
-    });
-
-    // Send/Receive status status
-    // relay0
-    server.on("/req_relay0", HTTP_GET, [](AsyncWebServerRequest *request){
-      if(mcp.digitalRead(0)==LOW) {
-        request->send(200, "text/plain", "relay0,on");
-      } else {
-        request->send(200, "text/plain", "relay0,off");
-      }
-    });
-    // relay1
-    server.on("/req_relay1", HTTP_GET, [](AsyncWebServerRequest *request){
-      if(mcp.digitalRead(1)==LOW) {
-        request->send(200, "text/plain", "relay1,on");
-      } else {
-        request->send(200, "text/plain", "relay1,off");
-      }
-    });
-    // relay2
-    server.on("/req_relay2", HTTP_GET, [](AsyncWebServerRequest *request){
-      if(mcp.digitalRead(2)==LOW) {
-        request->send(200, "text/plain", "relay2,on");
-      } else {
-        request->send(200, "text/plain", "relay2,off");
-      }
-    });
-    // relay3
-    server.on("/req_relay3", HTTP_GET, [](AsyncWebServerRequest *request){
-      if(mcp.digitalRead(3)==LOW) {
-        request->send(200, "text/plain", "relay3,on");
-      } else {
-        request->send(200, "text/plain", "relay3,off");
-      }
-    });
-    // Receive commands
-    // relay0
-    server.on("/relay0=0", HTTP_GET, [](AsyncWebServerRequest *request){
-      setRelay(0, 1);
-      request->send(204);
-    });
-    server.on("/relay0=1", HTTP_GET, [](AsyncWebServerRequest *request){
-      setRelay(0, 0);
-      request->send(204);
-    });
-    // relay1
-    server.on("/relay1=0", HTTP_GET, [](AsyncWebServerRequest *request){
-      setRelay(1, 1);
-      request->send(204);
-    });
-    server.on("/relay1=1", HTTP_GET, [](AsyncWebServerRequest *request){
-      setRelay(1, 0);
-      request->send(204);
-    });
-    // relay2
-    server.on("/relay2=0", HTTP_GET, [](AsyncWebServerRequest *request){
-      setRelay(2, 1);
-      request->send(204);
-    });
-    server.on("/relay2=1", HTTP_GET, [](AsyncWebServerRequest *request){
-      setRelay(2, 0);
-      request->send(204);
-    });
-    // relay3
-    server.on("/relay3=0", HTTP_GET, [](AsyncWebServerRequest *request){
-      setRelay(3, 1);
-      request->send(204);
-    });
-    server.on("/relay3=1", HTTP_GET, [](AsyncWebServerRequest *request){
-      setRelay(3, 0);
-      request->send(204);
-    });
-    //end
-    server.onNotFound(notFound);
-
-    server.begin();
-}
-// WebServ
 
 void setRelay(int relay, int state) 
 { // Note: relays are active LOW
