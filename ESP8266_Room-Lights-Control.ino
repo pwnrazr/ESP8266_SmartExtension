@@ -225,7 +225,6 @@ void onMqttConnect(bool sessionPresent)
   mqttClient.subscribe("noderelay/reboot", MQTT_QOS);
   mqttClient.subscribe("noderelay/reqstat", MQTT_QOS);
   
-  mqttClient.publish("noderelay/boot", MQTT_QOS, false, "0"); //publish to topic on boot
   char ipaddr[16];
   sprintf(ipaddr, "%d.%d.%d.%d", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3] );
 
