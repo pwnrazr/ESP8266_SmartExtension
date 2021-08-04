@@ -95,7 +95,7 @@ void loop()
   if (currentMillis - heartbeat_prevMillis >= heartbeatInterval) 
   {
     heartbeat_prevMillis = currentMillis;
-    mqttClient.publish("/nodeRelay/heartbeat", MQTT_QOS, false, "Hi"); //publish to topic
+    mqttClient.publish("noderelay/heartbeat", MQTT_QOS, false, "Hi"); //publish to topic
   }
   
   if(currentMillis > 4094967296)  //overflow protection
@@ -213,18 +213,18 @@ void onWifiDisconnect(const WiFiEventStationModeDisconnected& event) {
 
 void onMqttConnect(bool sessionPresent) 
 {
-  mqttClient.subscribe("/myroom/relay/0", MQTT_QOS);
-  mqttClient.subscribe("/myroom/relay/1", MQTT_QOS);
-  mqttClient.subscribe("/myroom/relay/2", MQTT_QOS);
-  mqttClient.subscribe("/myroom/relay/3", MQTT_QOS);
-  mqttClient.subscribe("/node_relay/reboot", MQTT_QOS);
-  mqttClient.subscribe("/node_relay/reqstat", MQTT_QOS);
+  mqttClient.subscribe("noderelay/0", MQTT_QOS);
+  mqttClient.subscribe("noderelay/1", MQTT_QOS);
+  mqttClient.subscribe("noderelay/2", MQTT_QOS);
+  mqttClient.subscribe("noderelay/3", MQTT_QOS);
+  mqttClient.subscribe("noderelay/reboot", MQTT_QOS);
+  mqttClient.subscribe("noderelay/reqstat", MQTT_QOS);
   
-  mqttClient.publish("/myroom/relay/boot", MQTT_QOS, false, "0"); //publish to topic on boot
+  mqttClient.publish("noderelay/boot", MQTT_QOS, false, "0"); //publish to topic on boot
   char ipaddr[16];
   sprintf(ipaddr, "%d.%d.%d.%d", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3] );
 
-  mqttClient.publish("/myroom/relay/ip", MQTT_QOS, false, ipaddr);
+  mqttClient.publish("noderelay/ip", MQTT_QOS, false, ipaddr);
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
@@ -249,35 +249,35 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   payloadint = atoi(payload);  // Convert payload to integer
   
   //Relay 0
-  if(strcmp((char*)topic, "/myroom/relay/0") == 0)
+  if(strcmp((char*)topic, "noderelay/0") == 0)
   {
     setRelay(0, !payloadint);
   }
 
   //Relay 1
-  if(strcmp((char*)topic, "/myroom/relay/1") == 0)
+  if(strcmp((char*)topic, "noderelay/1") == 0)
   {
     setRelay(1, !payloadint);
   }
 
   //Relay 2
-  if(strcmp((char*)topic, "/myroom/relay/2") == 0)
+  if(strcmp((char*)topic, "noderelay/2") == 0)
   {
     setRelay(2, !payloadint);
   }
 
   //Relay 3
-  if(strcmp((char*)topic, "/myroom/relay/3") == 0)
+  if(strcmp((char*)topic, "noderelay/3") == 0)
   {
     setRelay(3, !payloadint);
   }
 
-  if(strcmp((char*)topic, "/node_relay/reboot") == 0)
+  if(strcmp((char*)topic, "noderelay/reboot") == 0)
   {
     ESP.restart();
   }
 
-  if(strcmp((char*)topic, "/node_relay/reqstat") == 0)  // Request statistics function
+  if(strcmp((char*)topic, "noderelay/reqstat") == 0)  // Request statistics function
   {
     unsigned long REQ_STAT_CUR_MILLIS = millis(); // gets current millis
 
@@ -294,7 +294,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       (int)REQ_STAT_CUR_MILLIS
     );  // convert string to char array for Millis. Elegance courtesy of Shahmi Technosparks
 
-    mqttClient.publish("/node_relay/curstat", MQTT_QOS, false, REQ_STAT_CUR_TEMPCHAR);
+    mqttClient.publish("noderelay/curstat", MQTT_QOS, false, REQ_STAT_CUR_TEMPCHAR);
   }
 }
 
