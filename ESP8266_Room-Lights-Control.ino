@@ -58,10 +58,14 @@ void setup()
   mcp.begin_I2C();
 
   mcp.pinMode(0, OUTPUT);
+  mcp.digitalWrite(0, HIGH);
   mcp.pinMode(1, OUTPUT);
+  mcp.digitalWrite(1, HIGH);
   mcp.pinMode(2, OUTPUT);
+  mcp.digitalWrite(2, HIGH);
   mcp.pinMode(3, OUTPUT);
-
+  mcp.digitalWrite(3, HIGH);
+  
   /*
   mcp.pinMode(4, INPUT_PULLUP);
   
