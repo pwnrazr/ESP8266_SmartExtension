@@ -157,11 +157,7 @@ void otasetup()
 
   // No authentication by default
   ArduinoOTA.setPassword(OTA_PASS);
-
-  // Password can be set with it's md5 value as well
-  // MD5(admin) = 21232f297a57a5a743894a0e4a801fc3
-  // ArduinoOTA.setPasswordHash("21232f297a57a5a743894a0e4a801fc3");
-
+  
   ArduinoOTA.onStart([]() {
     String type;
     if (ArduinoOTA.getCommand() == U_FLASH) {
@@ -169,8 +165,7 @@ void otasetup()
     } else { // U_FS
       type = "filesystem";
     }
-
-    // NOTE: if updating FS this would be the place to unmount FS using FS.end()
+    
     //Serial.println("Start updating " + type);
   });
   ArduinoOTA.onEnd([]() {
@@ -216,8 +211,8 @@ void onWifiDisconnect(const WiFiEventStationModeDisconnected& event) {
   wifiReconnectTimer.once(2, connectToWifi);
 }
 
-void onMqttConnect(bool sessionPresent) {
-  //mqttClient.subscribe("test/lol", 2);
+void onMqttConnect(bool sessionPresent) 
+{
   mqttClient.subscribe("/myroom/relay/0", MQTT_QOS);
   mqttClient.subscribe("/myroom/relay/1", MQTT_QOS);
   mqttClient.subscribe("/myroom/relay/2", MQTT_QOS);
@@ -228,7 +223,7 @@ void onMqttConnect(bool sessionPresent) {
   mqttClient.publish("/myroom/relay/boot", MQTT_QOS, false, "0"); //publish to topic on boot
   char ipaddr[16];
   sprintf(ipaddr, "%d.%d.%d.%d", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3] );
-  //mqttClient.publish("test/lol", 1, true, "test 2");
+
   mqttClient.publish("/myroom/relay/ip", MQTT_QOS, false, ipaddr);
 }
 
@@ -236,12 +231,6 @@ void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
   if (WiFi.isConnected()) {
     mqttReconnectTimer.once(2, connectToMqtt);
   }
-}
-
-void onMqttSubscribe(uint16_t packetId, uint8_t qos) {
-}
-
-void onMqttUnsubscribe(uint16_t packetId) {
 }
 
 void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
@@ -309,19 +298,13 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   }
 }
 
-void onMqttPublish(uint16_t packetId) {
-}
-
 void commssetup() {
   wifiConnectHandler = WiFi.onStationModeGotIP(onWifiConnect);
   wifiDisconnectHandler = WiFi.onStationModeDisconnected(onWifiDisconnect);
 
   mqttClient.onConnect(onMqttConnect);
   mqttClient.onDisconnect(onMqttDisconnect);
-  mqttClient.onSubscribe(onMqttSubscribe);
-  mqttClient.onUnsubscribe(onMqttUnsubscribe);
   mqttClient.onMessage(onMqttMessage);
-  mqttClient.onPublish(onMqttPublish);
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
   mqttClient.setCredentials(MQTT_USER, MQTT_PASS);
   connectToWifi();
