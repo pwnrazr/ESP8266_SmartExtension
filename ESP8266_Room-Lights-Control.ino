@@ -233,6 +233,10 @@ void onMqttConnect(bool sessionPresent)
   sprintf(ipaddr, "%d.%d.%d.%d", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3] );
 
   mqttClient.publish("noderelay/ip", MQTT_QOS, false, ipaddr);
+  mqttClient.publish("noderelay/relayState0", MQTT_QOS, false, "0");
+  mqttClient.publish("noderelay/relayState1", MQTT_QOS, false, "0");
+  mqttClient.publish("noderelay/relayState2", MQTT_QOS, false, "0");
+  mqttClient.publish("noderelay/relayState3", MQTT_QOS, false, "0");
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
