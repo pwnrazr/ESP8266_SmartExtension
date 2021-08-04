@@ -16,7 +16,7 @@
 #include <Ticker.h>
 #include <AsyncMqttClient.h>
 #include <ArduinoOTA.h>
-#include "Adafruit_MCP23017.h"
+#include <Adafruit_MCP23X17.h>
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 
@@ -29,7 +29,7 @@ WiFiEventHandler wifiConnectHandler;
 WiFiEventHandler wifiDisconnectHandler;
 Ticker wifiReconnectTimer;
 
-Adafruit_MCP23017 mcp;
+Adafruit_MCP23X17 mcp;
 
 AsyncWebServer server(80); // WebServ
 
@@ -58,24 +58,20 @@ void setup()
   commssetup();
   otasetup();
   webServSetup();   // Web Serv
-  mcp.begin();
+  mcp.begin_I2C();
 
   mcp.pinMode(0, OUTPUT);
   mcp.pinMode(1, OUTPUT);
   mcp.pinMode(2, OUTPUT);
   mcp.pinMode(3, OUTPUT);
   
-  mcp.pinMode(4, INPUT);
-  mcp.pullUp(4, HIGH);  // turn on a 100K pullup internally
+  mcp.pinMode(4, INPUT_PULLUP);
   
-  mcp.pinMode(5, INPUT);
-  mcp.pullUp(5, HIGH);  // turn on a 100K pullup internally
+  mcp.pinMode(5, INPUT_PULLUP);
   
-  mcp.pinMode(6, INPUT);
-  mcp.pullUp(6, HIGH);  // turn on a 100K pullup internally
+  mcp.pinMode(6, INPUT_PULLUP);
   
-  mcp.pinMode(7, INPUT);
-  mcp.pullUp(7, HIGH);  // turn on a 100K pullup internally
+  mcp.pinMode(7, INPUT_PULLUP);
 
   // Properly set last button states
   lastButtonState0 = mcp.digitalRead(4);
