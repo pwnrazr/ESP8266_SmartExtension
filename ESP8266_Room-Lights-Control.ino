@@ -29,6 +29,7 @@ Ticker wifiReconnectTimer;
 
 Adafruit_MCP23X17 mcp;
 
+/*
 byte buttonState0 = 0;
 byte lastButtonState0 = 0;  
 
@@ -37,6 +38,7 @@ byte lastButtonState1 = 0;
 
 byte buttonState2 = 0;
 byte lastButtonState2 = 0;  
+*/
 
 byte buttonState3 = 0;
 byte lastButtonState3 = 0;  
@@ -59,19 +61,23 @@ void setup()
   mcp.pinMode(1, OUTPUT);
   mcp.pinMode(2, OUTPUT);
   mcp.pinMode(3, OUTPUT);
-  
+
+  /*
   mcp.pinMode(4, INPUT_PULLUP);
   
   mcp.pinMode(5, INPUT_PULLUP);
   
   mcp.pinMode(6, INPUT_PULLUP);
+  */
   
   mcp.pinMode(7, INPUT_PULLUP);
 
   // Properly set last button states
+  /*
   lastButtonState0 = mcp.digitalRead(4);
   lastButtonState1 = mcp.digitalRead(5);
   lastButtonState2 = mcp.digitalRead(6);
+  */
   lastButtonState3 = mcp.digitalRead(7);
 }
 
@@ -101,6 +107,7 @@ void loop()
 
 void switchpolling()
 {
+  /*
   //START Relay 0 Switch
   buttonState0 = mcp.digitalRead(4);
   if (buttonState0 != lastButtonState0) //Relay 0
@@ -127,11 +134,14 @@ void switchpolling()
   }
   lastButtonState2 = buttonState2;
   //END Relay 2 Switch
-
+  */
   //START Relay 3 Switch
   buttonState3 = mcp.digitalRead(7);
   if (buttonState3 != lastButtonState3) //Relay 3
   {
+    setRelay(0, buttonState3);
+    setRelay(1, buttonState3);
+    setRelay(2, buttonState3);
     setRelay(3, buttonState3);
   }
   lastButtonState3 = buttonState3;
