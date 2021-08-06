@@ -16,7 +16,6 @@
 #include <Ticker.h>
 #include <AsyncMqttClient.h>
 #include <ArduinoOTA.h>
-#include <Adafruit_MCP23X17.h>
 
 #include "settings.h"
 
@@ -26,8 +25,6 @@ Ticker mqttReconnectTimer;
 WiFiEventHandler wifiConnectHandler;
 WiFiEventHandler wifiDisconnectHandler;
 Ticker wifiReconnectTimer;
-
-Adafruit_MCP23X17 mcp;
 
 /*
 byte buttonState0 = 0;
@@ -55,6 +52,7 @@ void setup()
   WiFi.mode(WIFI_STA);
   commssetup();
   otasetup();
+  /*
   mcp.begin_I2C();
 
   mcp.pinMode(0, OUTPUT);
@@ -66,23 +64,23 @@ void setup()
   mcp.pinMode(3, OUTPUT);
   mcp.digitalWrite(3, HIGH);
   
-  /*
   mcp.pinMode(4, INPUT_PULLUP);
   
   mcp.pinMode(5, INPUT_PULLUP);
   
   mcp.pinMode(6, INPUT_PULLUP);
-  */
   
   mcp.pinMode(7, INPUT_PULLUP);
-
+  */
+  
   // Properly set last button states
   /*
   lastButtonState0 = mcp.digitalRead(4);
   lastButtonState1 = mcp.digitalRead(5);
   lastButtonState2 = mcp.digitalRead(6);
-  */
+  
   lastButtonState3 = mcp.digitalRead(7);
+  */
 }
 
 void loop() 
@@ -138,7 +136,7 @@ void switchpolling()
   }
   lastButtonState2 = buttonState2;
   //END Relay 2 Switch
-  */
+  
   //START Relay 3 Switch
   buttonState3 = mcp.digitalRead(7);
   if (buttonState3 != lastButtonState3) //Relay 3
@@ -150,6 +148,7 @@ void switchpolling()
   }
   lastButtonState3 = buttonState3;
   //END Relay 3 Switch
+  */
 }
 
 void otasetup() 
@@ -333,6 +332,6 @@ void setRelay(int relay, int state)
   
   strcat(relState, charRelay);    // Append charRelay to relState
   
-  mcp.digitalWrite(relay, state);
+  //mcp.digitalWrite(relay, state);
   mqttClient.publish(relState, MQTT_QOS, false, charState); //publish to topic
 }
