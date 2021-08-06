@@ -26,19 +26,8 @@ WiFiEventHandler wifiConnectHandler;
 WiFiEventHandler wifiDisconnectHandler;
 Ticker wifiReconnectTimer;
 
-/*
 byte buttonState0 = 0;
 byte lastButtonState0 = 0;  
-
-byte buttonState1 = 0;
-byte lastButtonState1 = 0;  
-
-byte buttonState2 = 0;
-byte lastButtonState2 = 0;  
-*/
-
-byte buttonState3 = 0;
-byte lastButtonState3 = 0;  
 
 unsigned long switch_prevMillis = 0, heartbeat_prevMillis = 0, currentMillis;
 
@@ -47,40 +36,35 @@ unsigned long switch_prevMillis = 0, heartbeat_prevMillis = 0, currentMillis;
 
 #define MQTT_QOS 0
 
+#define manualSwitch 5  // Input01 GPIO5/D1 (For manual on/off)
+
+#define relayCh01 4     // Channel1 GPIO4/D2
+#define relayCh02 14    // Channel2 GPIO14/D5
+#define relayCh03 12    // Channel3 GPIO12/D6
+#define relayCh04 13    // Channel4 GPIO13/D7
+
 void setup() 
 {
   WiFi.mode(WIFI_STA);
   commssetup();
   otasetup();
-  /*
-  mcp.begin_I2C();
-
-  mcp.pinMode(0, OUTPUT);
-  mcp.digitalWrite(0, HIGH);
-  mcp.pinMode(1, OUTPUT);
-  mcp.digitalWrite(1, HIGH);
-  mcp.pinMode(2, OUTPUT);
-  mcp.digitalWrite(2, HIGH);
-  mcp.pinMode(3, OUTPUT);
-  mcp.digitalWrite(3, HIGH);
   
-  mcp.pinMode(4, INPUT_PULLUP);
+  pinMode(manualSwitch, INPUT);
   
-  mcp.pinMode(5, INPUT_PULLUP);
+  pinMode(relayCh01, OUTPUT);
+  digitalWrite(relayCh01, HIGH); // Turn off relay on boot
   
-  mcp.pinMode(6, INPUT_PULLUP);
+  pinMode(relayCh02, OUTPUT);
+  digitalWrite(relayCh02, HIGH); // Turn off relay on boot
   
-  mcp.pinMode(7, INPUT_PULLUP);
-  */
+  pinMode(relayCh03, OUTPUT);
+  digitalWrite(relayCh03, HIGH); // Turn off relay on boot
+  
+  pinMode(relayCh04, OUTPUT);
+  digitalWrite(relayCh04, HIGH); // Turn off relay on boot
   
   // Properly set last button states
-  /*
-  lastButtonState0 = mcp.digitalRead(4);
-  lastButtonState1 = mcp.digitalRead(5);
-  lastButtonState2 = mcp.digitalRead(6);
-  
-  lastButtonState3 = mcp.digitalRead(7);
-  */
+  lastButtonState0 = digitalRead(manualSwitch);
 }
 
 void loop() 
@@ -109,46 +93,15 @@ void loop()
 
 void switchpolling()
 {
-  /*
-  //START Relay 0 Switch
-  buttonState0 = mcp.digitalRead(4);
-  if (buttonState0 != lastButtonState0) //Relay 0
+  buttonState0 = digitalRead(manualSwitch);
+  if (buttonState0 != lastButtonState0) // Manual Switch
   {
-    setRelay(0, buttonState0);
+    setRelay(relayCh01, buttonState0);
+    setRelay(relayCh02, buttonState0);
+    setRelay(relayCh03, buttonState0);
+    setRelay(relayCh04, buttonState0);
   }
   lastButtonState0 = buttonState0;
-  //END Relay 0 Switch
-
-  //START Relay 1 Switch
-  buttonState1 = mcp.digitalRead(5);
-  if (buttonState1 != lastButtonState1) //Relay 1
-  {
-    setRelay(1, buttonState1);
-  }
-  lastButtonState1 = buttonState1;
-  //END Relay 1 Switch
-
-  //START Relay 2 Switch
-  buttonState2 = mcp.digitalRead(6);
-  if (buttonState2 != lastButtonState2) //Relay 2
-  {
-    setRelay(2, buttonState2);
-  }
-  lastButtonState2 = buttonState2;
-  //END Relay 2 Switch
-  
-  //START Relay 3 Switch
-  buttonState3 = mcp.digitalRead(7);
-  if (buttonState3 != lastButtonState3) //Relay 3
-  {
-    setRelay(0, buttonState3);
-    setRelay(1, buttonState3);
-    setRelay(2, buttonState3);
-    setRelay(3, buttonState3);
-  }
-  lastButtonState3 = buttonState3;
-  //END Relay 3 Switch
-  */
 }
 
 void otasetup() 
@@ -262,25 +215,25 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   //Relay 0
   if(strcmp((char*)topic, "noderelay/0") == 0)
   {
-    setRelay(0, !payloadint);
+    setRelay(relayCh01, !payloadint);
   }
 
   //Relay 1
   if(strcmp((char*)topic, "noderelay/1") == 0)
   {
-    setRelay(1, !payloadint);
+    setRelay(relayCh02, !payloadint);
   }
 
   //Relay 2
   if(strcmp((char*)topic, "noderelay/2") == 0)
   {
-    setRelay(2, !payloadint);
+    setRelay(relayCh03, !payloadint);
   }
 
   //Relay 3
   if(strcmp((char*)topic, "noderelay/3") == 0)
   {
-    setRelay(3, !payloadint);
+    setRelay(relayCh04, !payloadint);
   }
 
   if(strcmp((char*)topic, "noderelay/reboot") == 0)
@@ -327,11 +280,28 @@ void setRelay(int relay, int state)
   char charRelay[2];
   char relState[23] = "noderelay/relayState";
   
+  digitalWrite(relay, state);
+  
+  switch(relay)
+  {
+    case relayCh01:
+      relay = 0;
+      break;
+    case relayCh02:
+      relay = 1;
+      break;
+    case relayCh03:
+      relay = 2;
+      break;
+    case relayCh04:
+      relay = 3;
+      break;
+  }
+  
   itoa(!state, charState, 10);    // Invert charState from state as relay is active LOW, prevents Blynk seeing ON as OFF
   itoa(relay, charRelay, 10);
   
   strcat(relState, charRelay);    // Append charRelay to relState
   
-  //mcp.digitalWrite(relay, state);
   mqttClient.publish(relState, MQTT_QOS, false, charState); //publish to topic
 }
