@@ -180,6 +180,7 @@ void onMqttConnect(bool sessionPresent)
   mqttClient.subscribe("noderelay/3", MQTT_QOS);
   mqttClient.subscribe("noderelay/reboot", MQTT_QOS);
   mqttClient.subscribe("noderelay/reqstat", MQTT_QOS);
+  mqttClient.subscribe("noderelay/sync", MQTT_QOS);
   
   char ipaddr[16];
   sprintf(ipaddr, "%d.%d.%d.%d", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3] );
@@ -241,6 +242,29 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
     ESP.restart();
   }
 
+  if(strcmp((char*)topic, "noderelay/sync") == 0)
+  {
+    int relayCh01State = !digitalRead(relayCh01);
+    int relayCh02State = !digitalRead(relayCh02);
+    int relayCh03State = !digitalRead(relayCh03);
+    int relayCh04State = !digitalRead(relayCh04);
+
+    char relayCh01StateChar[2];
+    char relayCh02StateChar[2];
+    char relayCh03StateChar[2];
+    char relayCh04StateChar[2];
+
+    itoa(relayCh01State, relayCh01StateChar, 10);
+    itoa(relayCh02State, relayCh02StateChar, 10);
+    itoa(relayCh03State, relayCh03StateChar, 10);
+    itoa(relayCh04State, relayCh04StateChar, 10);
+    
+    mqttClient.publish("noderelay/relayState0", MQTT_QOS, false, relayCh01StateChar);
+    mqttClient.publish("noderelay/relayState1", MQTT_QOS, false, relayCh02StateChar);
+    mqttClient.publish("noderelay/relayState2", MQTT_QOS, false, relayCh03StateChar);
+    mqttClient.publish("noderelay/relayState3", MQTT_QOS, false, relayCh04StateChar);
+  }
+  
   if(strcmp((char*)topic, "noderelay/reqstat") == 0)  // Request statistics function
   {
     unsigned long REQ_STAT_CUR_MILLIS = millis(); // gets current millis
