@@ -183,7 +183,7 @@ void onMqttConnect(bool sessionPresent)
   mqttClient.subscribe("noderelay/sync", MQTT_QOS);
   
   char ipaddr[16];
-  sprintf(ipaddr, "%d.%d.%d.%d", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3] );
+  snprintf(ipaddr, 16, "%d.%d.%d.%d", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3] );
 
   mqttClient.publish("noderelay/ip", MQTT_QOS, false, ipaddr);
   mqttClient.publish("noderelay/relayState0", MQTT_QOS, false, "0");
