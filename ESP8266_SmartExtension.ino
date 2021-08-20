@@ -237,10 +237,10 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
 
   if(strcmp((char*)topic, "noderelay/sync") == 0)
   {
-    int relayCh01State = !digitalRead(relayCh01);
-    int relayCh02State = !digitalRead(relayCh02);
-    int relayCh03State = !digitalRead(relayCh03);
-    int relayCh04State = !digitalRead(relayCh04);
+    byte relayCh01State = !digitalRead(relayCh01);
+    byte relayCh02State = !digitalRead(relayCh02);
+    byte relayCh03State = !digitalRead(relayCh03);
+    byte relayCh04State = !digitalRead(relayCh04);
 
     char relayCh01StateChar[2];
     char relayCh02StateChar[2];
@@ -291,7 +291,7 @@ void commssetup() {
   connectToWifi();
 }
 
-void setRelay(int relay, int state) 
+void setRelay(byte relay, byte state) 
 { // Note: relays are active LOW
   char charState[2];
   char charRelay[2];
