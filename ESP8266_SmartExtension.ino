@@ -202,7 +202,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   //Serial.println("Publish received.");
   //Serial.println(topic);
   
-  int payloadint;
+  byte payloadint;
   
   payloadint = atoi(payload);  // Convert payload to integer
   
