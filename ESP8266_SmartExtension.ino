@@ -315,7 +315,7 @@ void setRelay(int relay, int state)
       break;
   }
   
-  itoa(!state, charState, 10);    // Invert charState from state as relay is active LOW, prevents Blynk seeing ON as OFF
+  itoa(!state, charState, 10);    // Invert charState from state as relay is active LOW
   itoa(relay, charRelay, 10);
   
   strcat(relState, charRelay);    // Append charRelay to relState
