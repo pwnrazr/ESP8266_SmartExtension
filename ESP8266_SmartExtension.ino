@@ -175,7 +175,7 @@ void onMqttConnect(bool sessionPresent)
   mqttClient.subscribe("noderelay/2", MQTT_QOS);
   mqttClient.subscribe("noderelay/3", MQTT_QOS);
   mqttClient.subscribe("noderelay/reboot", MQTT_QOS);
-  mqttClient.subscribe("noderelay/reqstat", MQTT_QOS);
+  mqttClient.subscribe("noderelay/request_uptime", MQTT_QOS);
   mqttClient.subscribe("noderelay/sync", MQTT_QOS);
   
   char ipaddr[16];
@@ -254,24 +254,14 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
     mqttClient.publish("noderelay/relayState3", MQTT_QOS, false, relayCh04StateChar);
   }
   
-  if(strcmp((char*)topic, "noderelay/reqstat") == 0)  // Request statistics function
+  if(strcmp((char*)topic, "noderelay/request_uptime") == 0)  // Request statistics function
   {
-    unsigned long REQ_STAT_CUR_MILLIS = millis(); // gets current millis
-
-    char REQ_STAT_CUR_TEMPCHAR[60];
-
-    snprintf(
-      REQ_STAT_CUR_TEMPCHAR,
-      60, 
-      "%d.%d.%d.%d,%lu", 
-      WiFi.localIP()[0], 
-      WiFi.localIP()[1],
-      WiFi.localIP()[2], 
-      WiFi.localIP()[3],
-      (int)REQ_STAT_CUR_MILLIS
-    );  // convert string to char array for Millis. Elegance courtesy of Shahmi Technosparks
-
-    mqttClient.publish("noderelay/curstat", MQTT_QOS, false, REQ_STAT_CUR_TEMPCHAR);
+    unsigned long CUR_MILLIS = millis() / 1000; // Gets current millis and divide by 1000 to get in seconds
+    
+    char BUFFER_CUR_TEMPCHAR[30];
+    sprintf(BUFFER_CUR_TEMPCHAR, "%lu", CUR_MILLIS);
+    
+    mqttClient.publish("noderelay/uptime", MQTT_QOS, false, BUFFER_CUR_TEMPCHAR);
   }
 }
 
