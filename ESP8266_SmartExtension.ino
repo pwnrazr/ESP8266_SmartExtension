@@ -96,10 +96,24 @@ void switchpolling()
   buttonState0 = digitalRead(manualSwitch);
   if (buttonState0 != lastButtonState0) // Manual Switch
   {
-    setRelay(relayCh01, buttonState0);
-    setRelay(relayCh02, buttonState0);
-    setRelay(relayCh03, buttonState0);
-    setRelay(relayCh04, buttonState0);
+    if(
+      digitalRead(relayCh01) == LOW ||
+      digitalRead(relayCh02) == LOW ||
+      digitalRead(relayCh03) == LOW ||
+      digitalRead(relayCh04) == LOW)
+      {
+        setRelay(relayCh01, HIGH);    // Turn all off only if any of the sockets are turned on
+        setRelay(relayCh02, HIGH);
+        setRelay(relayCh03, HIGH);
+        setRelay(relayCh04, HIGH);
+      }
+      else
+      {
+        setRelay(relayCh01, LOW);     // Turn all on when none are on
+        setRelay(relayCh02, LOW); 
+        setRelay(relayCh03, LOW);
+        setRelay(relayCh04, LOW);
+      }
   }
   lastButtonState0 = buttonState0;
 }
