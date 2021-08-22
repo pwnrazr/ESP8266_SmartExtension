@@ -29,7 +29,7 @@ Ticker wifiReconnectTimer;
 byte buttonState0 = 0;
 byte lastButtonState0 = 0;  
 
-unsigned long switch_prevMillis = 0, heartbeat_prevMillis = 0, currentMillis;
+unsigned long switch_prevMillis = 0, heartbeat_prevMillis = 0;
 
 #define switchInterval 200
 #define heartbeatInterval 15000
@@ -71,23 +71,16 @@ void loop()
 {
   ArduinoOTA.handle();
   
-  currentMillis = millis();
-
-  if (currentMillis - switch_prevMillis >= switchInterval) 
+  if (millis() - switch_prevMillis >= switchInterval) 
   {
-    switch_prevMillis = currentMillis;
+    switch_prevMillis = millis();
     switchpolling();
   }
 
-  if (currentMillis - heartbeat_prevMillis >= heartbeatInterval) 
+  if (millis() - heartbeat_prevMillis >= heartbeatInterval) 
   {
-    heartbeat_prevMillis = currentMillis;
+    heartbeat_prevMillis = millis();
     mqttClient.publish("noderelay/heartbeat", MQTT_QOS, false, "Hi"); //publish to topic
-  }
-  
-  if(currentMillis > 4094967296)  //overflow protection
-  {
-    ESP.restart();
   }
 }
 
