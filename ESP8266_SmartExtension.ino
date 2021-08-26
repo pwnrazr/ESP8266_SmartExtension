@@ -46,6 +46,7 @@ unsigned long switch_prevMillis = 0, heartbeat_prevMillis = 0;
 void setup() 
 {
   WiFi.mode(WIFI_STA);
+  WiFi.setSleepMode(WIFI_NONE_SLEEP);
   commssetup();
   otasetup();
   
